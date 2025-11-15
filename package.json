@@ -13,7 +13,7 @@
   "version": "1.0.0",
   "description": "Group project for NAU's CS 312. A recipe sharing platform built with PERN stack.",
   "main": "app.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
