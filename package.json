@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/pg": "^8.15.6"
+  },
+  "name": "project_group_37_recipe_sharing_platform",
+  "version": "1.0.0",
+  "description": "Group project for NAU's CS 312. A recipe sharing platform built with PERN stack.",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oliveoil222/Project_Group_37_Recipe_Sharing_Platform.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oliveoil222/Project_Group_37_Recipe_Sharing_Platform/issues"
+  },
+  "homepage": "https://github.com/oliveoil222/Project_Group_37_Recipe_Sharing_Platform#readme"
+}
