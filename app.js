@@ -7,6 +7,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { pool } from './db.js';
 
+import homeRoutes from './routes/home.js';
+import recipeRoutes from './routes/recipes.js';
+import userRoutes from './routes/users.js';
+
 // configure
 dotenv.config();
 
@@ -101,6 +105,10 @@ app.get('/test-users', async (req, res) => {
         res.status(500).json({ ok: false, error: 'Select failed' });
     }
 });
+
+app.use('/', homeRoutes);
+app.use('/recipes', recipeRoutes);
+app.use('/users', userRoutes);
 
 // start server
 app.listen(PORT, () => {
