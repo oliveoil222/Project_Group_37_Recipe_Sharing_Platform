@@ -25,12 +25,19 @@ const __dirname = path.dirname(__filename);
 // view engine and static files
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+// Ensure templates are always reloaded and not cached in dev
+app.disable('view cache');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 // middleware
 app.use(express.urlencoded({ extended: true })); // for form submissions
 app.use(express.json());                         // for JSON (if needed)
+// Provide safe default locals for templates
+app.use((req, res, next) => {
+    if (typeof res.locals.error === 'undefined') res.locals.error = null;
+    next();
+});
 
 
 /*

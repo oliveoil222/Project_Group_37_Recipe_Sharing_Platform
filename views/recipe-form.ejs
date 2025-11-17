@@ -1,3 +1,48 @@
-<h1>Recipe Form (Phase 1 Placeholder)</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>New Recipe</title>
+	<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+	<h1>Submit a Recipe</h1>
+	<p><button onclick="window.location.href='/recipes'">Back to Recipes</button></p>
 
-<button onclick="window.location.href='/'">Go back</button>
+	<% if (error) { %>
+		<p style="color: #b00"><%= error %></p>
+	<% } %>
+
+	<form action="/recipes" method="POST">
+		<div>
+			<label>Title *</label><br />
+			<input type="text" name="title" value="<%= values?.title || '' %>" required />
+		</div>
+		<div>
+			<label>Ingredients *</label><br />
+			<textarea name="ingredients" rows="5" required><%= values?.ingredients || '' %></textarea>
+		</div>
+		<div>
+			<label>Instructions *</label><br />
+			<textarea name="instructions" rows="6" required><%= values?.instructions || '' %></textarea>
+		</div>
+		<div>
+			<label>Cuisine</label><br />
+			<input type="text" name="cuisine" value="<%= values?.cuisine || '' %>" />
+		</div>
+		<div>
+			<label>Difficulty</label><br />
+			<input type="text" name="difficulty" value="<%= values?.difficulty || '' %>" />
+		</div>
+		<div>
+			<label>Cook Time</label><br />
+			<input type="text" name="cook_time" value="<%= values?.cook_time || '' %>" />
+		</div>
+		<div>
+			<label>Image URL</label><br />
+			<input type="url" name="image_url" value="<%= values?.image_url || '' %>" />
+		</div>
+		<p><button type="submit">Save Recipe</button></p>
+	</form>
+</body>
+</html>
