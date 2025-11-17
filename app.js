@@ -66,12 +66,18 @@ app.get('/db-test', async (req, res) => {
 app.get('/test-create-user', async (req, res) => {
     try {
 
+        // unique suffixes so the "test insert users" feature adds new users on each click
+        const suffix = Date.now();
+        const username = `testuser_${suffix}`;
+        const email = `test_${suffix}@example.com`;
+
+
         // test query
         const result = await pool.query(
             `INSERT INTO users (username, email, password_hash)
             VALUES ($1, $2, $3)
             RETURNING user_id, username, email, created_at`,
-            ['testuser', 'test@example.com', 'fakehash123']
+            [username, email, 'fakehash123']
         );
 
         // validate
