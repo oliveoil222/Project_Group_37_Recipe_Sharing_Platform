@@ -1,3 +1,41 @@
-<h1>Recipes Page (Phase 1 Placeholder)</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Recipes</title>
+	<link rel="stylesheet" href="/styles.css" />
+	<style>
+		.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+		.card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; background: #fff; }
+		.card h3 { margin: 0 0 .5rem; }
+		.muted { color: #666; font-size: .9rem; }
+	</style>
+	</head>
+<body>
+	<h1>Recipes</h1>
+	<p><button onclick="window.location.href='/'">Home</button> <button onclick="window.location.href='/recipes/new'">New Recipe</button></p>
 
-<button onclick="window.location.href='/'">Go back</button>
+		<% if (typeof error !== 'undefined' && error) { %>
+		<p class="muted"><%= error %></p>
+	<% } %>
+
+		<% const _recipes = (typeof recipes !== 'undefined' && Array.isArray(recipes)) ? recipes : []; %>
+		<% if (_recipes.length === 0) { %>
+		<p>No recipes yet.</p>
+	<% } else { %>
+		<div class="grid">
+				<% _recipes.forEach(r => { %>
+				<div class="card">
+					<h3><a href="/recipes/<%= r.id %>"><%= r.title %></a></h3>
+					<p class="muted">
+						<% if (r.cuisine) { %>Cuisine: <%= r.cuisine %> • <% } %>
+						<% if (r.difficulty) { %>Difficulty: <%= r.difficulty %> • <% } %>
+						<% if (r.cook_time) { %>Time: <%= r.cook_time %><% } %>
+					</p>
+				</div>
+			<% }) %>
+		</div>
+	<% } %>
+
+</body>
+</html>
