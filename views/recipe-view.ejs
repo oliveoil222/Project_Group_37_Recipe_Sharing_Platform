@@ -60,5 +60,80 @@
   </div>
   </section>
 
+  <script>
+  document.addEventListener( 'DOMContentLoaded', () => {
+  const widget = document.querySelector( '.rating-widget' );
+  if ( !widget ) return;
+
+  const stars = widget.querySelectorAll( '.rating-star' );
+  const valueSpan = widget.querySelector( '.rating-value' );
+  const messageP = widget.querySelector( '.rating-message' );
+  const submitBtn = widget.querySelector( '.rating-submit' );
+  const recipeId = widget.dataset.recipeId;
+
+  let selectedRating = 0;
+
+  function updateVisual( rating ) {
+    stars.forEach( star => {
+      const starValue = Number( star.dataset.value );
+      if ( starValue <= rating ) {
+        star.classList.add( 'active' );
+        star.classList.remove( 'inactive' );
+        star.setAttribute( 'aria-pressed', 'true' );
+      } else {
+        star.classList.remove( 'active' );
+        star.classList.add( 'inactive' );
+        star.setAttribute( 'aria-pressed', 'false' );
+      }
+    } );
+
+    if ( rating === 0 ) {
+      valueSpan.textContent = 'None';
+    } else {
+      valueSpan.textContent = rating + ' / 5';
+    }
+  }
+
+  stars.forEach( star => {
+    const starValue = Number( star.dataset.value );
+
+    star.addEventListener( 'click', () => {
+      selectedRating = starValue;
+      updateVisual( selectedRating );
+      messageP.textContent = '';
+    } );
+
+    star.addEventListener( 'mouseenter', () => {
+      updateVisual( starValue );
+    } );
+
+    star.addEventListener( 'mouseleave', () => {
+      updateVisual( selectedRating );
+    } );
+  } );
+
+  submitBtn.addEventListener( 'click', async () => {
+    if ( selectedRating === 0 ) {
+      messageP.textContent = 'Please select a rating first.';
+      messageP.style.color = 'red';
+      return;
+    }
+
+    // FRONTEND ONLY FOR NOW:
+    // log it and show a fake success message.
+    console.log(
+      'Submitting rating:',
+      { recipeId, rating: selectedRating }
+    );
+    messageP.textContent =
+      'Thanks! Your rating of ' + selectedRating + ' was recorded.';
+    messageP.style.color = 'green';
+  } );
+
+  // initialize all stars as inactive
+  updateVisual( selectedRating );
+  } );
+  </script>
+
 </body>
 </html>

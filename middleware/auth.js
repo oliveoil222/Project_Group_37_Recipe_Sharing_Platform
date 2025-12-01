@@ -6,5 +6,5 @@ export function ensureAuthenticated(req, res, next) {
     }
 
     // redirect user if not logged in
-    return res.redirect('//users/login');
+    return res.redirect('/users/login');
 }
