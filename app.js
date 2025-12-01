@@ -5,6 +5,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import session from 'express-session';
 import { pool } from './db.js';
 
 import homeRoutes from './routes/home.js';
@@ -33,9 +34,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 // middleware
 app.use(express.urlencoded({ extended: true })); // for form submissions
 app.use(express.json());                         // for JSON (if needed)
-// Provide safe default locals for templates
+
+// session middleware
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'dev-secret',
+    resave: false,
+    saveUninitialized: false,
+}));
+
+// provide safe default locals for templates
 app.use((req, res, next) => {
     if (typeof res.locals.error === 'undefined') res.locals.error = null;
+    next();
+});
+
+// make logged-in users available in ejs templates
+app.use( (req, res, next) => {
+    res.locals.currentUser = req.session.user || null;
     next();
 });
 

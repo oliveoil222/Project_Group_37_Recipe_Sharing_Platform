@@ -15,6 +15,41 @@
 	<h1>Recipes</h1>
 	<p><button onclick="window.location.href='/'">Home</button> <button onclick="window.location.href='/recipes/new'">New Recipe</button></p>
 
+	<form method="GET" action="/recipes" class="recipe-search">
+    <div>
+      <label for="query">Search</label>
+      <input
+        type="text"
+        id="query"
+        name="query"
+        placeholder="Search by title or ingredients"
+        value="<%= (filters && filters.query) ? filters.query : '' %>"
+      />
+    </div>
+
+    <div>
+      <label for="difficulty">Difficulty</label>
+      <select id="difficulty" name="difficulty">
+        <option value="">Any</option>
+        <option value="Easy"
+          <%= (filters && filters.difficulty === 'Easy') ? 'selected' : '' %>>
+          Easy
+        </option>
+        <option value="Medium"
+          <%= (filters && filters.difficulty === 'Medium') ? 'selected' : '' %>>
+          Medium
+        </option>
+        <option value="Hard"
+          <%= (filters && filters.difficulty === 'Hard') ? 'selected' : '' %>>
+          Hard
+        </option>
+      </select>
+    </div>
+
+    <button type="submit">Filter</button>
+    <a href="/recipes">Clear</a>
+  	</form>
+
 		<% if (typeof error !== 'undefined' && error) { %>
 		<p class="muted"><%= error %></p>
 	<% } %>
