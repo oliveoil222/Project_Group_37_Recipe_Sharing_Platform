@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
         paramIndex++;
     }
 
-    let sql = `SELECT id, title, cuisine, difficulty, cook_time, image_url, created_at FROM recipes`;
+    let sql = `SELECT id, title, cuisine, difficulty, cook_time, image_url FROM recipes`;
 
     if (conditions.length > 0) {
         sql += ' WHERE ' + conditions.join(' AND ');
@@ -121,7 +121,7 @@ router.get('/:id', async (req, res) => {
     try {
         const result = await pool.query(
             `SELECT id, title, ingredients, instructions, 
-             cuisine, difficulty, cook_time, image_url, created_at
+             cuisine, difficulty, cook_time, image_url
              FROM recipes WHERE id = $1`,
             [id]
         );
