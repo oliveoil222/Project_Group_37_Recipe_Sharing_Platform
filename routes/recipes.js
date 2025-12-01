@@ -26,12 +26,15 @@ router.get('/', async (req, res) => {
         paramIndex++;
     }
 
+    // get recipe
     let sql = `SELECT id, title, cuisine, difficulty, cook_time, image_url FROM recipes`;
 
+    // add conditions if any
     if (conditions.length > 0) {
         sql += ' WHERE ' + conditions.join(' AND ');
     }
 
+    // order by newest first
     sql += ' ORDER BY id DESC';
     try {
         const result = await pool.query(sql, values);
@@ -82,6 +85,7 @@ router.post('/', ensureAuthenticated,async (req, res) => {
     const trimmedDifficulty = difficulty ? difficulty.trim() : null;
     const trimmedImageUrl = image_url ? image_url.trim() : null;
 
+    // validate cook_time if provided
     let cookTimeValue = null;
     if ( cook_time && cook_time.trim() !== '' ) {
         cookTimeValue = parseInt(cook_time.trim(), 10);
@@ -94,6 +98,7 @@ router.post('/', ensureAuthenticated,async (req, res) => {
         }   
     }
 
+    // insert into DB
     try {
         const insert = await pool.query(
             `INSERT INTO recipes (user_id, title, ingredients, instructions, 
