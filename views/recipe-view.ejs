@@ -23,5 +23,42 @@
     <% if (recipe.difficulty) { %>Difficulty: <%= recipe.difficulty %> • <% } %>
     <% if (recipe.cook_time) { %>Cook time: <%= recipe.cook_time %> <% } %>
   </p>
+
+  <section class="rating-section">
+  <h2>Rate this recipe</h2>
+
+  <div class="rating-widget"
+       data-recipe-id="<%= recipe.id %>"
+       aria-label="Rate this recipe">
+
+    <div class="rating-stars"
+         role="radiogroup"
+         aria-label="Recipe rating from 1 to 5 stars">
+      <% for (let i = 1; i <= 5; i++) { %>
+        <button
+          type="button"
+          class="rating-star"
+          data-value="<%= i %>"
+          aria-label="<%= i %> star<%= i > 1 ? 's' : '' %>"
+          aria-pressed="false">
+          ★
+        </button>
+      <% } %>
+    </div>
+
+    <p class="rating-current">
+      Selected rating:
+      <span class="rating-value">None</span>
+    </p>
+
+    <button type="button"
+            class="rating-submit">
+      Submit rating
+    </button>
+
+    <p class="rating-message"></p>
+  </div>
+  </section>
+
 </body>
 </html>
