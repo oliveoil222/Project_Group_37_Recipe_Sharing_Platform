@@ -27,6 +27,12 @@
   <section class="rating-section">
   <h2>Rate this recipe</h2>
 
+  <p>
+    Average rating:
+    <strong><%= (typeof recipe.avg_rating !== 'undefined' && recipe.avg_rating !== null) ? recipe.avg_rating : 'N/A' %></strong>
+    (<%= recipe.rating_count || 0 %> rating<%= (recipe.rating_count || 0) === 1 ? '' : 's' %>)
+  </p>
+
   <div class="rating-widget"
        data-recipe-id="<%= recipe.id %>"
        aria-label="Rate this recipe">
@@ -71,7 +77,7 @@
   const submitBtn = widget.querySelector( '.rating-submit' );
   const recipeId = widget.dataset.recipeId;
 
-  let selectedRating = 0;
+  let selectedRating = <%= typeof user_rating !== 'undefined' && user_rating ? user_rating : 0 %>;
 
   function updateVisual( rating ) {
     stars.forEach( star => {
@@ -119,15 +125,24 @@
       return;
     }
 
-    // FRONTEND ONLY FOR NOW:
-    // log it and show a fake success message.
-    console.log(
-      'Submitting rating:',
-      { recipeId, rating: selectedRating }
-    );
-    messageP.textContent =
-      'Thanks! Your rating of ' + selectedRating + ' was recorded.';
-    messageP.style.color = 'green';
+    try {
+      const resp = await fetch(`/recipes/${recipeId}/rate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating: selectedRating })
+      });
+      const data = await resp.json();
+      if (!data.ok) {
+        messageP.textContent = data.error || 'Failed to submit rating.';
+        messageP.style.color = 'red';
+        return;
+      }
+      messageP.textContent = `Thanks! Your rating of ${selectedRating} was recorded. Avg: ${data.avg_rating} (${data.rating_count} ratings)`;
+      messageP.style.color = 'green';
+    } catch (e) {
+      messageP.textContent = 'Network error submitting rating.';
+      messageP.style.color = 'red';
+    }
   } );
 
   // initialize all stars as inactive

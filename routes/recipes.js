@@ -125,18 +125,74 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query(
-            `SELECT id, title, ingredients, instructions, 
-             cuisine, difficulty, cook_time, image_url
-             FROM recipes WHERE id = $1`,
+            `SELECT r.id, r.title, r.ingredients, r.instructions,
+                    r.cuisine, r.difficulty, r.cook_time, r.image_url,
+                    ROUND(AVG(rt.rating)::numeric, 1) AS avg_rating,
+                    COUNT(rt.id) AS rating_count
+             FROM recipes r
+             LEFT JOIN ratings rt ON rt.recipe_id = r.id
+             WHERE r.id = $1
+             GROUP BY r.id`,
             [id]
         );
         if (!result.rows[0]) {
             return res.status(404).send('Recipe not found');
         }
-        res.render('recipe-view', { recipe: result.rows[0] });
+
+        let user_rating = null;
+        if (req.session && req.session.user) {
+            const ur = await pool.query(
+                `SELECT rating FROM ratings WHERE recipe_id=$1 AND user_id=$2`,
+                [id, req.session.user.user_id]
+            );
+            user_rating = ur.rows[0]?.rating || null;
+        }
+
+        res.render('recipe-view', { recipe: result.rows[0], user_rating });
     } catch (err) {
         console.error('Fetch recipe error:', err?.message || err);
         res.status(500).send('Failed to fetch recipe.');
+    }
+});
+
+// POST /recipes/:id/rate - submit or update rating
+router.post('/:id/rate', ensureAuthenticated, async (req, res) => {
+    const { id } = req.params;
+    const { rating } = req.body;
+    const userId = req.session.user.user_id;
+
+    const parsed = parseInt(rating, 10);
+    if (Number.isNaN(parsed) || parsed < 1 || parsed > 5) {
+        return res.status(400).json({ ok: false, error: 'Rating must be an integer 1-5.' });
+    }
+
+    try {
+        // Ensure recipe exists
+        const recipeCheck = await pool.query(`SELECT id FROM recipes WHERE id=$1`, [id]);
+        if (!recipeCheck.rows[0]) {
+            return res.status(404).json({ ok: false, error: 'Recipe not found.' });
+        }
+
+        // Upsert rating
+        await pool.query(
+            `INSERT INTO ratings (recipe_id, user_id, rating)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (recipe_id, user_id)
+             DO UPDATE SET rating = EXCLUDED.rating`,
+            [id, userId, parsed]
+        );
+
+        // Return new average
+        const avg = await pool.query(
+            `SELECT ROUND(AVG(rating)::numeric, 1) AS avg_rating, COUNT(*) AS rating_count
+             FROM ratings WHERE recipe_id=$1`,
+            [id]
+        );
+
+        return res.json({ ok: true, avg_rating: avg.rows[0].avg_rating, rating_count: avg.rows[0].rating_count });
+    } catch (err) {
+        console.error('Rating submit error:', err?.message || err);
+        return res.status(500).json({ ok: false, error: 'Failed to submit rating.' });
     }
 });
 
