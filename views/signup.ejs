@@ -4,30 +4,47 @@
   <meta charset="UTF-8" />
   <title>Sign Up</title>
   <link rel="stylesheet" href="/styles.css" />
-  <style>.form { max-width: 460px; }</style>
-  </head>
+  <link rel="stylesheet" href="/css/form.css" />
+</head>
+
 <body>
-  <h1>Sign Up</h1>
-  <p><button onclick="window.location.href='/'">Home</button> <button onclick="window.location.href='/users/login'">Login</button></p>
+
+<div class="form-container">
+
+  <h1>Create Account</h1>
+
+  <p style="text-align:center">
+    <button onclick="window.location.href='/'">Home</button>
+    <button onclick="window.location.href='/users/login'">Login</button>
+  </p>
 
   <% if (error) { %>
-    <p style="color:#b00"><%= error %></p>
+    <p class="error-message"><%= error %></p>
   <% } %>
 
-  <form class="form" action="/users/signup" method="POST">
+  <form action="/users/signup" method="POST">
     <div>
-      <label>Username</label><br />
+      <label>Username</label>
       <input type="text" name="username" value="<%= values?.username || '' %>" required />
     </div>
+
     <div>
-      <label>Email</label><br />
+      <label>Email</label>
       <input type="email" name="email" value="<%= values?.email || '' %>" required />
     </div>
+
     <div>
-      <label>Password</label><br />
+      <label>Password</label>
       <input type="password" name="password" required />
     </div>
-    <p><button type="submit">Create account</button></p>
+
+    <div class="form-actions">
+      <button type="submit">Create Account</button>
+    </div>
+
   </form>
+
+</div>
+
 </body>
 </html>
