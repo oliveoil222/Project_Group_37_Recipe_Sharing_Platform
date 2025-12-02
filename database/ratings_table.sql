@@ -8,15 +8,15 @@ CREATE TABLE IF NOT EXISTS ratings (
     CONSTRAINT unique_user_recipe_rating UNIQUE (recipe_id, user_id)
 );
 
-CREATE OR REPLACE FUNCTION set_updated_at()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS TRIGGER AS $func$
 BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$func$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS ratings_set_updated_at ON ratings;
 CREATE TRIGGER ratings_set_updated_at
 BEFORE UPDATE ON ratings
-FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
