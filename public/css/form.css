@@ -1,0 +1,47 @@
+.form-container {
+    max-width: 480px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+}
+
+.form-container h1,
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+form div {
+    margin-bottom: 1rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.55rem;
+    border-radius: 6px;
+    border: 1px solid #bbb;
+    font-size: 1rem;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.error-message {
+    color: #b00;
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}

@@ -1,0 +1,58 @@
+form {
+  max-width: 650px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+form div {
+  margin-bottom: 1.2rem;
+}
+
+form label {
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+form input[type="text"],
+form textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #fff;
+}
+
+form input[type="text"]:focus,
+form textarea:focus {
+  border-color: #666;
+  outline: none;
+}
+
+form button {
+  padding: 0.7rem 1.3rem;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+form button:hover {
+  background: #555;
+}
+
+h1 {
+  text-align: center;
+}
+
+p button {
+  margin-bottom: 1rem;
+}

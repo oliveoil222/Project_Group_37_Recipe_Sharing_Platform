@@ -4,49 +4,89 @@ import { ensureAuthenticated } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// GET /recipes - list recipes (search by title, ingredients, difficulty)
+// GET /recipes - list recipes with search, filters, rating, sorting
 router.get('/', async (req, res) => {
-    const { query, difficulty } = req.query;
+    const { query, difficulty, minRating, sort } = req.query;
 
-    const conditions = [];
-    const values = [];
-    let paramIndex = 1;
+    let whereClauses = [];
+    let values = [];
+    let param = 1;
 
-    // search across title and ingredients
-    if (query && query.trim() !== '') {
-        conditions.push(`(title ILIKE $${paramIndex} OR ingredients ILIKE $${paramIndex})`);
+    // Keyword search
+    if (query && query.trim() !== "") {
+        whereClauses.push(`(r.title ILIKE $${param} OR r.ingredients ILIKE $${param})`);
         values.push(`%${query.trim()}%`);
-        paramIndex++;
+        param++;
     }
 
-    // filter by difficulty
-    if (difficulty && difficulty.trim() !== '') {
-        conditions.push(`difficulty = $${paramIndex}`);
-        values.push(difficulty.trim());
-        paramIndex++;
+    // Difficulty filter
+    if (difficulty && difficulty !== "") {
+        whereClauses.push(`r.difficulty = $${param}`);
+        values.push(difficulty);
+        param++;
     }
 
-    // get recipe
-    let sql = `SELECT id, title, cuisine, difficulty, cook_time, image_url FROM recipes`;
+    // Base select with LEFT JOIN ratings
+    let sql = `
+        SELECT 
+            r.id,
+            r.title,
+            r.cuisine,
+            r.difficulty,
+            r.cook_time,
+            r.image_url,
+            ROUND(AVG(rt.rating)::numeric, 1)::float AS avg_rating,
+            COUNT(rt.id) AS rating_count
+        FROM recipes r
+        LEFT JOIN ratings rt ON rt.recipe_id = r.id
+    `;
 
-    // add conditions if any
-    if (conditions.length > 0) {
-        sql += ' WHERE ' + conditions.join(' AND ');
+    if (whereClauses.length > 0) {
+        sql += ` WHERE ` + whereClauses.join(" AND ");
     }
 
-    // order by newest first
-    sql += ' ORDER BY id DESC';
+    sql += ` GROUP BY r.id `;
+
+    if (minRating && !isNaN(minRating)) {
+        sql += ` HAVING ROUND(AVG(rt.rating)::numeric, 1)::float >= $${param}`;
+        values.push(Number(minRating));
+        param++;
+    }
+
+    // Sorting
+    if (sort === "rating") {
+        sql += ` ORDER BY avg_rating DESC NULLS LAST`;
+    } else {
+        sql += ` ORDER BY r.id DESC`;
+    }
+
     try {
         const result = await pool.query(sql, values);
-        res.render('recipes', { recipes: result.rows, error: null,
-                                filters: { query: query || '', difficulty: difficulty || '' }
-         });
+
+        res.render("recipes", {
+            recipes: result.rows,
+            error: null,
+            filters: {
+                query: query || "",
+                difficulty: difficulty || "",
+                minRating: minRating || "",
+                sort: sort || ""
+            }
+        });
+
     } catch (err) {
-        console.error('Fetch recipes error:', err?.message || err);
-        // Gracefully render with no data if DB isn't configured
-        res.render('recipes', { recipes: [], error: 'Database not ready or query failed.',
-                    filters: { query: query || '', difficulty: difficulty || '' }
-         });
+        console.error("Fetch recipes error:", err);
+
+        res.render("recipes", {
+            recipes: [],
+            error: "Database error.",
+            filters: {
+                query: query || "",
+                difficulty: difficulty || "",
+                minRating: minRating || "",
+                sort: sort || ""
+            }
+        });
     }
 });
 
@@ -127,12 +167,12 @@ router.get('/:id', async (req, res) => {
         const result = await pool.query(
             `SELECT r.id, r.title, r.ingredients, r.instructions,
                     r.cuisine, r.difficulty, r.cook_time, r.image_url,
-                    ROUND(AVG(rt.rating)::numeric, 1) AS avg_rating,
+                    ROUND(AVG(rt.rating)::numeric, 1)::float AS avg_rating,
                     COUNT(rt.id) AS rating_count
-             FROM recipes r
-             LEFT JOIN ratings rt ON rt.recipe_id = r.id
-             WHERE r.id = $1
-             GROUP BY r.id`,
+            FROM recipes r
+            LEFT JOIN ratings rt ON rt.recipe_id = r.id
+            WHERE r.id = $1
+            GROUP BY r.id`,
             [id]
         );
         if (!result.rows[0]) {

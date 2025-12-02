@@ -2,31 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title><%= typeof title !== 'undefined' ? title : 'Recipe Sharing Platform' %></title>
+    <title><%= title || "Recipe Sharing Platform" %></title>
     <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-    <h1><%= typeof title !== 'undefined' ? title : 'Recipe Sharing Platform' %></h1>
-    <p>Welcome to the Recipe Sharing Platform!</p>
 
-    <h2>Navigation</h2>
-    <button onclick="window.location.href='/recipes'">View Recipes</button>
-    <button onclick="window.location.href='/recipes/new'">Submit a Recipe</button>
+    <header class="top-bar">
         <% if (currentUser) { %>
-            <span>Logged in as <strong><%= currentUser.username %></strong></span>
-            <form style="display:inline" action="/users/logout" method="POST">
-                <button type="submit">Logout</button>
+            <span class="user-info">
+                Logged in as <strong><%= currentUser.username %></strong>
+            </span>
+
+            <form action="/users/logout" method="POST">
+                <button class="btn-logout" type="submit">Logout</button>
             </form>
         <% } else { %>
-            <button onclick="window.location.href='/users/login'">Login</button>
-            <button onclick="window.location.href='/users/signup'">Sign up</button>
+            <div class="auth-buttons">
+                <button class="btn-secondary" onclick="window.location.href='/users/login'">Login</button>
+                <button class="btn-secondary" onclick="window.location.href='/users/signup'">Sign up</button>
+            </div>
         <% } %>
+    </header>
 
-    <h2>Dev Links</h2>
-    <ul>
-        <li><a href="/db-test">Test DB Connection</a></li>
-        <li><a href="/test-create-user">Insert Test User</a></li>
-        <li><a href="/test-users">View All Users</a></li>
-    </ul>
+    <main class="home-container">
+
+        <h1>Recipe Sharing Platform</h1>
+        <p class="subtitle">Welcome to the Recipe Sharing Platform!</p>
+
+        <h2>Navigation</h2>
+
+        <div class="nav-buttons">
+            <button class="btn-primary" onclick="window.location.href='/recipes'">View Recipes</button>
+            <button class="btn-primary" onclick="window.location.href='/recipes/new'">Submit a Recipe</button>
+        </div>
+
+        <h2>Developer Tools</h2>
+        <ul class="dev-links">
+            <li><a href="/db-test">Test DB Connection</a></li>
+            <li><a href="/test-create-user">Insert Test User</a></li>
+            <li><a href="/test-users">View All Users</a></li>
+        </ul>
+
+    </main>
+
 </body>
 </html>

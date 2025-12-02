@@ -4,45 +4,72 @@
 	<meta charset="UTF-8" />
 	<title>New Recipe</title>
 	<link rel="stylesheet" href="/styles.css" />
+	<link rel="stylesheet" href="/css/form.css" />
 </head>
+
 <body>
+
+<div class="form-container">
+
 	<h1>Submit a Recipe</h1>
-	<p><button onclick="window.location.href='/recipes'">Back to Recipes</button></p>
+
+	<p style="text-align:center">
+		<button onclick="window.location.href='/recipes'">Back to Recipes</button>
+	</p>
 
 	<% if (error) { %>
-		<p style="color: #b00"><%= error %></p>
+		<p class="error-message"><%= error %></p>
 	<% } %>
 
 	<form action="/recipes" method="POST">
+
 		<div>
-			<label>Title *</label><br />
+			<label>Title *</label>
 			<input type="text" name="title" value="<%= values?.title || '' %>" required />
 		</div>
+
 		<div>
-			<label>Ingredients *</label><br />
+			<label>Ingredients *</label>
 			<textarea name="ingredients" rows="5" required><%= values?.ingredients || '' %></textarea>
 		</div>
+
 		<div>
-			<label>Instructions *</label><br />
+			<label>Instructions *</label>
 			<textarea name="instructions" rows="6" required><%= values?.instructions || '' %></textarea>
 		</div>
+
 		<div>
-			<label>Cuisine</label><br />
+			<label>Cuisine</label>
 			<input type="text" name="cuisine" value="<%= values?.cuisine || '' %>" />
 		</div>
+
 		<div>
-			<label>Difficulty</label><br />
-			<input type="text" name="difficulty" value="<%= values?.difficulty || '' %>" />
+			<label>Difficulty</label>
+			<select name="difficulty">
+				<option value="">Select</option>
+				<option value="Easy" <%= values?.difficulty === 'Easy' ? 'selected' : '' %>>Easy</option>
+				<option value="Medium" <%= values?.difficulty === 'Medium' ? 'selected' : '' %>>Medium</option>
+				<option value="Hard" <%= values?.difficulty === 'Hard' ? 'selected' : '' %>>Hard</option>
+			</select>
 		</div>
+
 		<div>
-			<label>Cook Time</label><br />
+			<label>Cook Time (minutes)</label>
 			<input type="text" name="cook_time" value="<%= values?.cook_time || '' %>" />
 		</div>
+
 		<div>
-			<label>Image URL</label><br />
+			<label>Image URL</label>
 			<input type="text" name="image_url" value="<%= values?.image_url || '' %>" />
 		</div>
-		<p><button type="submit">Save Recipe</button></p>
+
+		<div class="form-actions">
+			<button type="submit">Save Recipe</button>
+		</div>
+
 	</form>
+
+</div>
+
 </body>
 </html>

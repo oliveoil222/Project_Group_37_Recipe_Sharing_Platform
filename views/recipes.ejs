@@ -3,73 +3,129 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>Recipes</title>
+
 	<link rel="stylesheet" href="/styles.css" />
+	<link rel="stylesheet" href="/css/search.css" />
+
 	<style>
-		.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
-		.card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; background: #fff; }
-		.card h3 { margin: 0 0 .5rem; }
-		.muted { color: #666; font-size: .9rem; }
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+			gap: 1rem;
+		}
+		.card {
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			padding: 1rem;
+			background: #fff;
+		}
+		.card h3 {
+			margin: 0 0 .5rem;
+		}
+		.muted {
+			color: #666;
+			font-size: .9rem;
+		}
 	</style>
-	</head>
+</head>
+
 <body>
 	<h1>Recipes</h1>
-	<p><button onclick="window.location.href='/'">Home</button> <button onclick="window.location.href='/recipes/new'">New Recipe</button></p>
+
+	<p>
+		<button onclick="window.location.href='/'">Home</button>
+		<button onclick="window.location.href='/recipes/new'">New Recipe</button>
+	</p>
 
 	<form method="GET" action="/recipes" class="recipe-search">
-    <div>
-      <label for="query">Search</label>
-      <input
-        type="text"
-        id="query"
-        name="query"
-        placeholder="Search by title or ingredients"
-        value="<%= (filters && filters.query) ? filters.query : '' %>"
-      />
-    </div>
 
-    <div>
-      <label for="difficulty">Difficulty</label>
-      <select id="difficulty" name="difficulty">
-        <option value="">Any</option>
-        <option value="Easy"
-          <%= (filters && filters.difficulty === 'Easy') ? 'selected' : '' %>>
-          Easy
-        </option>
-        <option value="Medium"
-          <%= (filters && filters.difficulty === 'Medium') ? 'selected' : '' %>>
-          Medium
-        </option>
-        <option value="Hard"
-          <%= (filters && filters.difficulty === 'Hard') ? 'selected' : '' %>>
-          Hard
-        </option>
-      </select>
-    </div>
+		<!-- Keyword -->
+		<div>
+			<label for="query">Search</label>
+			<input
+				type="text"
+				id="query"
+				name="query"
+				placeholder="Search by title or ingredients"
+				value="<%= filters.query %>"
+			/>
+		</div>
 
-    <button type="submit">Filter</button>
-    <a href="/recipes">Clear</a>
-  	</form>
+		<!-- Difficulty -->
+		<div>
+			<label for="difficulty">Difficulty</label>
+			<select id="difficulty" name="difficulty">
+				<option value="">Any</option>
+				<option value="Easy"   <%= filters.difficulty === 'Easy' ? 'selected' : '' %>>Easy</option>
+				<option value="Medium" <%= filters.difficulty === 'Medium' ? 'selected' : '' %>>Medium</option>
+				<option value="Hard"   <%= filters.difficulty === 'Hard' ? 'selected' : '' %>>Hard</option>
+			</select>
+		</div>
 
-		<% if (typeof error !== 'undefined' && error) { %>
+		<!-- Min Rating -->
+		<div>
+			<label for="minRating">Min Rating</label>
+			<select id="minRating" name="minRating">
+				<option value="">Any</option>
+				<option value="1" <%= filters.minRating == 1 ? 'selected' : '' %>>1+</option>
+				<option value="2" <%= filters.minRating == 2 ? 'selected' : '' %>>2+</option>
+				<option value="3" <%= filters.minRating == 3 ? 'selected' : '' %>>3+</option>
+				<option value="4" <%= filters.minRating == 4 ? 'selected' : '' %>>4+</option>
+				<option value="5" <%= filters.minRating == 5 ? 'selected' : '' %>>5</option>
+			</select>
+		</div>
+
+		<!-- Sort -->
+		<div>
+			<label for="sort">Sort By</label>
+			<select id="sort" name="sort">
+				<option value="">Newest</option>
+				<option value="rating" <%= filters.sort === 'rating' ? 'selected' : '' %>>
+					Highest Rated
+				</option>
+			</select>
+		</div>
+
+		<!-- Buttons -->
+		<button type="submit">Apply Filters</button>
+		<a href="/recipes">Clear</a>
+
+	</form>
+
+	<% if (typeof error !== 'undefined' && error) { %>
 		<p class="muted"><%= error %></p>
 	<% } %>
 
-		<% const _recipes = (typeof recipes !== 'undefined' && Array.isArray(recipes)) ? recipes : []; %>
-		<% if (_recipes.length === 0) { %>
-		<p>No recipes yet.</p>
+	<% const _recipes = Array.isArray(recipes) ? recipes : []; %>
+
+	<% if (_recipes.length === 0) { %>
+		<p>No recipes found.</p>
 	<% } else { %>
-		<div class="grid">
-				<% _recipes.forEach(r => { %>
-				<div class="card">
-					<h3><a href="/recipes/<%= r.id %>"><%= r.title %></a></h3>
-					<p class="muted">
-						<% if (r.cuisine) { %>Cuisine: <%= r.cuisine %> • <% } %>
-						<% if (r.difficulty) { %>Difficulty: <%= r.difficulty %> • <% } %>
-						<% if (r.cook_time) { %>Time: <%= r.cook_time %><% } %>
-					</p>
-				</div>
-			<% }) %>
-		</div>
+
+	<div class="grid">
+		<% _recipes.forEach(r => { %>
+			<div class="card">
+
+				<h3><a href="/recipes/<%= r.id %>"><%= r.title %></a></h3>
+
+				<p class="muted">
+					<% if (r.cuisine) { %>Cuisine: <%= r.cuisine %> • <% } %>
+					<% if (r.difficulty) { %>Difficulty: <%= r.difficulty %> • <% } %>
+					<% if (r.cook_time) { %>Time: <%= r.cook_time %> mins<% } %>
+				</p>
+
+                <p class="muted">
+                    <% if (r.rating_count > 0) { %>
+                        Rating: <%= r.avg_rating %> ⭐
+                        (<%= r.rating_count %> rating<%= r.rating_count == 1 ? '' : 's' %>)
+                    <% } else { %>
+                        No ratings yet
+                    <% } %>
+                </p>
+			</div>
+		<% }); %>
+	</div>
+
 	<% } %>
 
 </body>
