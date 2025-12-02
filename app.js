@@ -138,7 +138,11 @@ app.use('/', homeRoutes);
 app.use('/recipes', recipeRoutes);
 app.use('/users', userRoutes);
 
-// start server
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
+// start server unless running tests
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}`);
+    });
+}
+
+export default app;

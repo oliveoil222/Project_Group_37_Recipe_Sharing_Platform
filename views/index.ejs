@@ -12,7 +12,15 @@
     <h2>Navigation</h2>
     <button onclick="window.location.href='/recipes'">View Recipes</button>
     <button onclick="window.location.href='/recipes/new'">Submit a Recipe</button>
-    <button onclick="window.location.href='/users'">Users</button>
+        <% if (currentUser) { %>
+            <span>Logged in as <strong><%= currentUser.username %></strong></span>
+            <form style="display:inline" action="/users/logout" method="POST">
+                <button type="submit">Logout</button>
+            </form>
+        <% } else { %>
+            <button onclick="window.location.href='/users/login'">Login</button>
+            <button onclick="window.location.href='/users/signup'">Sign up</button>
+        <% } %>
 
     <h2>Dev Links</h2>
     <ul>
